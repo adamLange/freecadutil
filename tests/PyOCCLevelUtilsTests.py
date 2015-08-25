@@ -32,14 +32,6 @@ class TestStringMethods(unittest.TestCase):
 
       r = RibMaker(pts,l0,l1,l2)
       M = r.T(1)
-      #M_gold = matrix([
-      #    [1,0,0,0],
-      #    [0,1,0,0],
-      #    [0,0,1,9],
-      #    [0,0,0,1]
-      #  ],dtype='float64')
-      #assert_array_max_ulp(M,M_gold)
-
 
       M_gold = gp_Trsf()
       M_gold.SetValues(
@@ -56,10 +48,10 @@ class TestStringMethods(unittest.TestCase):
 
       self.assertTrue(flag)
 
-      #S = r.getSection(1)
-      #S_gold = [OCC.gp.gp_Pnt(0,0,9),OCC.gp.gp_Pnt(1,0,9),OCC.gp.gp_Pnt(0,1,9)]
-      #for i in enumerate(S):
-      #    self.assertTrue(S[i] == S_gold[i])
+      S = r.getSection(1)
+      S_gold = [OCC.gp.gp_Pnt(0,0,9),OCC.gp.gp_Pnt(1,0,9),OCC.gp.gp_Pnt(0,1,9)]
+      for i in range(len(S)):
+          self.assertTrue(S[i] == S_gold[i])
 
 
   #def test_rib_maker_scale_translate(self):

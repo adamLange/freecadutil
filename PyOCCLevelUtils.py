@@ -1,7 +1,7 @@
 #from OCC.Geom import Geom_BSplineSurface, Handle_Geom_BSplineSurface
 #from OCC.TColgp import TColgp_Array2OfPnt
 #from OCC.TColStd import TColStd_Array1OfReal, TColStd_Array2OfReal, TColStd_Array1OfInteger
-from OCC.gp import gp_Vec, gp_Trsf
+from OCC.gp import gp_Vec, gp_Trsf, gp_Pnt
 #from OCC.BRepBuilderAPI import BRepBuilderAPI_MakeFace
 import numpy as np
 from OCCUtils.edge import Edge
@@ -14,7 +14,7 @@ class RibMaker:
          l0, l1, and l2 are TopoDS_Edge
 
         """
-
+        self.pts = pointsList
 
         self.l0 = Edge(l0)
         self.l1 = Edge(l1)
@@ -86,8 +86,13 @@ class RibMaker:
           )
         return trsf
 
-    #def getSection(self,t):
-        
-
+    def getSection(self,t):
+        M = self.T(t)
+        trsf_pts = []
+        for pnt in self.pts:
+            p = gp_Pnt(pnt.XYZ())
+            p.Transform(M)
+            trsf_pts.append(p)
+        return trsf_pts
 
     #def getSections(self,tMin,tMax,numSections):
