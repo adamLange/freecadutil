@@ -1,7 +1,7 @@
 #from OCC.Geom import Geom_BSplineSurface, Handle_Geom_BSplineSurface
 #from OCC.TColgp import TColgp_Array2OfPnt
 #from OCC.TColStd import TColStd_Array1OfReal, TColStd_Array2OfReal, TColStd_Array1OfInteger
-from OCC.gp import gp_Vec
+from OCC.gp import gp_Vec, gp_Trsf
 #from OCC.BRepBuilderAPI import BRepBuilderAPI_MakeFace
 import numpy as np
 from OCCUtils.edge import Edge
@@ -70,14 +70,24 @@ class RibMaker:
         #| ------- | - |
         #| 0 ... 0 | 1 |
 
-        return np.matrix([
-            [P[0,0],P[0,1],P[0,2],b.X()],
-            [P[1,0],P[1,1],P[1,2],b.Y()],
-            [P[2,0],P[2,1],P[2,1],b.Z()],
-            [0,     0,     0,     1    ]
-          ],dtype='float64')
+        #return np.matrix([
+        #    [P[0,0],P[0,1],P[0,2],b.X()],
+        #    [P[1,0],P[1,1],P[1,2],b.Y()],
+        #    [P[2,0],P[2,1],P[2,2],b.Z()],
+        #    [0,     0,     0,     1    ]
+        #  ],dtype='float64')
+
+        trsf = gp_Trsf()
+        trsf.SetValues(
+            P[0,0],P[0,1],P[0,2],b.X(),
+            P[1,0],P[1,1],P[1,2],b.Y(),
+            P[2,0],P[2,1],P[2,2],b.Z(),
+              1e-8,  1e-4
+          )
+        return trsf
 
     #def getSection(self,t):
+        
 
 
     #def getSections(self,tMin,tMax,numSections):
