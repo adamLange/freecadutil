@@ -48,11 +48,23 @@ class TestStringMethods(unittest.TestCase):
 
       self.assertTrue(flag)
 
+      # check one section
       S = r.getSection(1)
       S_gold = [OCC.gp.gp_Pnt(0,0,9),OCC.gp.gp_Pnt(1,0,9),OCC.gp.gp_Pnt(0,1,9)]
       for i in range(len(S)):
           self.assertTrue(S[i] == S_gold[i])
 
+      # check several sections
+      Z = r.getSections(0,1.0,3)
+      Z_gold = [
+          [gp_Pnt(0,0,0),gp_Pnt(1,0,0),gp_Pnt(0,1,0)],
+          [gp_Pnt(0,0,4.5),gp_Pnt(1,0,4.5),gp_Pnt(0,1,4.5)],
+          [gp_Pnt(0,0,9.0),gp_Pnt(1,0,9.0),gp_Pnt(0,1,9.0)]
+        ]
+
+      for i in range(len(Z)):
+          for j in range(len(Z[i])):
+              self.assertTrue(Z[i][j] == Z_gold[i][j])
 
   #def test_rib_maker_scale_translate(self):
 

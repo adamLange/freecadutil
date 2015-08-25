@@ -95,4 +95,8 @@ class RibMaker:
             trsf_pts.append(p)
         return trsf_pts
 
-    #def getSections(self,tMin,tMax,numSections):
+    def getSections(self,tMin,tMax,numSections):
+        sections = []
+        for t in np.linspace(tMin,tMax,numSections):
+            sections.append(self.getSection(t))
+        return sections
