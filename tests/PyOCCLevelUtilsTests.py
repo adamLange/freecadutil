@@ -25,20 +25,19 @@ class TestStringMethods(unittest.TestCase):
       from numpy import matrix
       from numpy.testing import assert_array_max_ulp
 
-      pts = [OCC.gp.gp_Pnt(0,0,0),OCC.gp.gp_Pnt(1,0,0),OCC.gp.gp_Pnt(0,1,0)]
-      l0 = make_edge(points_to_bspline([gp_Pnt(0,0,1),gp_Pnt(0,0,10)]))
-      l1 = make_edge(points_to_bspline([gp_Pnt(1,0,1),gp_Pnt(1,0,10)]))
-      l2 = make_edge(points_to_bspline([gp_Pnt(0,1,1),gp_Pnt(1,2,10)]))
+      pts = [OCC.gp.gp_Pnt(5,0,0),OCC.gp.gp_Pnt(6,0,0),OCC.gp.gp_Pnt(5,1,0)]
+      l0 = make_edge(points_to_bspline([gp_Pnt(5,0,1),gp_Pnt(5,0,10)]))
+      l1 = make_edge(points_to_bspline([gp_Pnt(6,0,1),gp_Pnt(6,0,10)]))
+      l2 = make_edge(points_to_bspline([gp_Pnt(5,1,1),gp_Pnt(5,2,10)]))
 
       r = RibMaker(pts,l0,l1,l2)
       M = r.T(1)
 
       M_gold = matrix(
         [
-          [1,0,0,0],
-          [0,2,0,0],
-          [0,0,1,9],
-          [0,0,0,1]
+          [1,0,0],
+          [0,2,0],
+          [0,0,1]
         ],dtype='float64')
 
       assert_array_max_ulp(M,M_gold)
@@ -62,16 +61,16 @@ class TestStringMethods(unittest.TestCase):
 
       # check one section
       S = r.getSection(1)
-      S_gold = [OCC.gp.gp_Pnt(0,0,9),OCC.gp.gp_Pnt(1,0,9),OCC.gp.gp_Pnt(0,2,9)]
+      S_gold = [OCC.gp.gp_Pnt(5,0,9),OCC.gp.gp_Pnt(6,0,9),OCC.gp.gp_Pnt(5,2,9)]
       for i in range(len(S)):
           self.assertTrue(S[i] == S_gold[i])
 
       # check several sections
       Z = r.getSections(0,1.0,3)
       Z_gold = [
-          [gp_Pnt(0,0,0),gp_Pnt(1,0,0),gp_Pnt(0,1,0)],
-          [gp_Pnt(0,0,4.5),gp_Pnt(1,0,4.5),gp_Pnt(0,1.5,4.5)],
-          [gp_Pnt(0,0,9.0),gp_Pnt(1,0,9.0),gp_Pnt(0,2,9.0)]
+          [gp_Pnt(5,0,0),gp_Pnt(6,0,0),gp_Pnt(5,1,0)],
+          [gp_Pnt(5,0,4.5),gp_Pnt(6,0,4.5),gp_Pnt(5,1.5,4.5)],
+          [gp_Pnt(5,0,9.0),gp_Pnt(6,0,9.0),gp_Pnt(5,2,9.0)]
         ]
 
       for i in range(len(Z)):
