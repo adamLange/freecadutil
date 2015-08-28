@@ -21,10 +21,7 @@ class InteractiveBSplineCurve:
             self.periodic = False
 
     def getShape(self):
-        points = []
-        points.append(self.sketch.Geometry[0].StartPoint)
-        for line in self.sketch.Geometry:
-            points.append(line.EndPoint)
+        points = self.getPoles()
 
         bs = Part.BSplineCurve()
 
@@ -39,11 +36,27 @@ class InteractiveBSplineCurve:
         return shape
 
     def getPoles(self):
+        geo = []
+        for G in self.sketch.Geometry:
+            if not G.Construction:
+                geo.append(G)
         points = []
-        points.append(self.sketch.Geometry[0].StartPoint)
-        for line in self.sketch.Geometry:
+        points.append(geo[0].StartPoint)
+        for line in geo:
             points.append(line.EndPoint)
         return points
+
+    def getPolesAs_gp_Pnt(self):
+        pts = []
+        poles = self.getPoles()
+        placement = self.sketch.Placement
+        for i in poles:
+            vec = placement.multVec(i)
+            pt = gp_Pnt()
+            pt.SetCoord(vec.x,vec.y,vec.z)
+            pts.append(pt)
+        return pts
+
 
 class InteractiveBSplineSurface:
 
