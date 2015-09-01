@@ -151,7 +151,7 @@ class RibMaker(NurbsSurfaceBase):
                       ],dtype='float64')
         self.AI = A.I
 
-    def getRVecs(self,t):
+    def getRVecs(self,t,initial=False):
 
         l0t = (self.l0.curve.Value(t)).as_vec()
 
@@ -215,17 +215,36 @@ class RibMaker(NurbsSurfaceBase):
             poles.extend(row)
         return (poles,n_u,n_v)
 
-"""
+from OCC.Geom import Geom_Plane
+from OCC.GeomAPI import GeomAPI_IntCS
 class RibMakerTranslatePlane(RibMaker):
 
+    def __init__(self,pts,l0,l1,l2):
+        RibMaker.__init__(self,pts,l0r,l1,l2)
+        self.initial_plane = something
+
     def getR(self,t):
+        pass
+
+
+class RibMakerL0Perpendicular(RibMaker):
+
+    def getRVecs(self,t):
+
+        pt = gp_Pnt()
+        vec = gp_Vec()
+        self.l0.curve.D1(t,pt,vec)
+        plane = Geom_Plane( pt, vec.as_dir() )
+        intcs1 = GeomAPI_IntCS(self.l1.curve.GetHandle(),plane.GetHandle())
+        intcs2 = GeomAPI_IntCS(self.l2.curve.GetHandle(),plane.GetHandle())
         
+        u1, v1, w1 = intcs1.Param(1)
+        u2, v2, w2 = intcs2.Param(1)
+
+
         return r1, r2 ,r3
 
-class RibMakerC0Perpendicular(RibMaker):
-
-  def getR(self,t):
-
+"""
 
 TODO make classes inhereting from RibMaker that
 
