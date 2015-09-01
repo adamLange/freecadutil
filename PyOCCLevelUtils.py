@@ -141,27 +141,7 @@ class RibMaker(NurbsSurfaceBase):
         self.l1 = Edge(l1)
         self.l2 = Edge(l2)
 
-        l00 = (self.l0.curve.Value(self.l0.domain()[0])).as_vec()
-        l10 = (self.l1.curve.Value(self.l1.domain()[0])).as_vec()
-        l20 = (self.l2.curve.Value(self.l2.domain()[0])).as_vec()
-
         self.a = (self.l0.curve.Value(0)).as_vec()
-
-        """
-        #[[l10-l00],[l20-l00],[unit( (l10-l00) X (l20-l00) )]]
-        r1 = l10 - l00
-        r2 = l20 - l00 #At this point r2 still needs to be projected to
-                       # be perpendicular to r1.
-        r3 = gp_Vec(r1.XYZ())
-        r3.Cross(r2)
-        r3 = r3/r3.Magnitude()
-     
-        r4 = gp_Vec(r1.XYZ())
-        r4.Cross(r3)
-        r4 = r4/r4.Magnitude() # unit vector in plane and perpenducular
-                               # to r1
-        r2 = r4*(r4.Dot(r2)) # This is the r2 you are looking for
-        """
 
         r1, r2, r3 = self.getRVecs(0)
 
