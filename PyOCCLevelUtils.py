@@ -167,10 +167,7 @@ class RibMaker(NurbsSurfaceBase):
                       ],dtype='float64')
         self.AI = A.I
 
-    def T(self,t):
-        """
-        Get the transformation matrix, T at parameter t.
-        """
+    def getRVecs(self,t):
 
         l0t = (self.l0.curve.Value(t)).as_vec()
 
@@ -189,6 +186,15 @@ class RibMaker(NurbsSurfaceBase):
         r4 = r4/r4.Magnitude() # unit vector in plane and perpenducular
                                # to r1
         r2 = r4*(r4.Dot(r2)) # This is the r2 you are looking for
+
+        return r1, r2, r3
+
+    def T(self,t):
+        """
+        Get the transformation matrix, T at parameter t.
+        """
+
+        r1,r2,r3 = self.getRVecs(t)
 
         B = np.matrix([[r1.X(),r1.Y(),r1.Z()],
                        [r2.X(),r2.Y(),r2.Z()],
@@ -224,3 +230,14 @@ class RibMaker(NurbsSurfaceBase):
         for row in sections:
             poles.extend(row)
         return (poles,n_u,n_v)
+
+"""
+
+TODO make classes inhereting from RibMaker that
+
+A. has a plane which is always parallel to the plane defined by l0(0) l1(0) l2(0)
+B. has a plane which is always perpendicular to l0(t)
+C. has a plane which revolves around l0
+-  For A B and C, a handy oce function will be GeomAPI_IntCS
+
+"""
