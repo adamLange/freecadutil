@@ -147,6 +147,7 @@ class RibMaker(NurbsSurfaceBase):
 
         self.a = (self.l0.curve.Value(0)).as_vec()
 
+        """
         #[[l10-l00],[l20-l00],[unit( (l10-l00) X (l20-l00) )]]
         r1 = l10 - l00
         r2 = l20 - l00 #At this point r2 still needs to be projected to
@@ -160,6 +161,9 @@ class RibMaker(NurbsSurfaceBase):
         r4 = r4/r4.Magnitude() # unit vector in plane and perpenducular
                                # to r1
         r2 = r4*(r4.Dot(r2)) # This is the r2 you are looking for
+        """
+
+        r1, r2, r3 = self.getRVecs(0)
 
         A = np.matrix([[r1.X(),r1.Y(),r1.Z()],
                        [r2.X(),r2.Y(),r2.Z()],
@@ -232,6 +236,16 @@ class RibMaker(NurbsSurfaceBase):
         return (poles,n_u,n_v)
 
 """
+class RibMakerTranslatePlane(RibMaker):
+
+    def getR(self,t):
+        
+        return r1, r2 ,r3
+
+class RibMakerC0Perpendicular(RibMaker):
+
+  def getR(self,t):
+
 
 TODO make classes inhereting from RibMaker that
 
