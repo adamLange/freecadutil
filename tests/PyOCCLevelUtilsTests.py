@@ -28,23 +28,6 @@ class TestStringMethods(unittest.TestCase):
 
       assert_array_max_ulp(M,M_gold)
 
-      """
-      M_gold = gp_Trsf()
-      M_gold.SetValues(
-          1,0,0,0,
-          0,2,0,0,
-          0,0,1,9,
-          1e-8,1e-4)
-
-      flag = True
-      for i in range(1,4):
-          for j in range(1,5):
-              if not (M.Value(i,j) == M_gold.Value(i,j)):
-                  flag = False
-
-      self.assertTrue(flag)
-      """
-
       # check one section
       S = r.getSection(1)
       S_gold = [OCC.gp.gp_Pnt(5,0,9),OCC.gp.gp_Pnt(6,0,9),OCC.gp.gp_Pnt(5,2,9)]
@@ -63,11 +46,11 @@ class TestStringMethods(unittest.TestCase):
           for j in range(len(Z[i])):
               self.assertTrue(Z[i][j] == Z_gold[i][j])
 
-  def test_RibMakerL0Perpendicular(self):
+  def test_RibMakerL0Normal(self):
 
       from OCC.gp import gp_Pnt,gp_Trsf
       from OCCUtils.Construct import points_to_bspline, make_edge
-      from PyOCCLevelUtils import RibMakerL0Perpendicular
+      from PyOCCLevelUtils import RibMakerL0Normal
       from numpy import matrix
       from numpy.testing import assert_array_max_ulp
 
@@ -76,7 +59,7 @@ class TestStringMethods(unittest.TestCase):
       l1 = make_edge(points_to_bspline([gp_Pnt(6,0,1),gp_Pnt(6,0,20)]))
       l2 = make_edge(points_to_bspline([gp_Pnt(5,1,1),gp_Pnt(5,2,10)]))
 
-      r = RibMakerL0Perpendicular(pts,l0,l1,l2)
+      r = RibMakerL0Normal(pts,l0,l1,l2)
       M = r.T(1)
 
       M_gold = matrix(
@@ -105,12 +88,13 @@ class TestStringMethods(unittest.TestCase):
       for i in range(len(Z)):
           for j in range(len(Z[i])):
               self.assertTrue(Z[i][j] == Z_gold[i][j])
-  """
+
+
   def test_RibMakerTranslatePlane(self):
 
       from OCC.gp import gp_Pnt,gp_Trsf
       from OCCUtils.Construct import points_to_bspline, make_edge
-      from PyOCCLevelUtils import RibMaker
+      from PyOCCLevelUtils import RibMakerTranslatePlane
       from numpy import matrix
       from numpy.testing import assert_array_max_ulp
 
@@ -119,7 +103,7 @@ class TestStringMethods(unittest.TestCase):
       l1 = make_edge(points_to_bspline([gp_Pnt(6,0,1),gp_Pnt(6,0,20)]))
       l2 = make_edge(points_to_bspline([gp_Pnt(5,1,1),gp_Pnt(5,2,10)]))
 
-      r = RibMakerL0Perpendicular(pts,l0,l1,l2)
+      r = RibMakerTranslatePlane(pts,l0,l1,l2)
       M = r.T(1)
 
       M_gold = matrix(
@@ -148,7 +132,7 @@ class TestStringMethods(unittest.TestCase):
       for i in range(len(Z)):
           for j in range(len(Z[i])):
               self.assertTrue(Z[i][j] == Z_gold[i][j])
-    """
+
 
 if __name__ == '__main__':
     unittest.main()

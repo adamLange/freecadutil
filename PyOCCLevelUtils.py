@@ -217,30 +217,96 @@ class RibMaker(NurbsSurfaceBase):
 
 from OCC.Geom import Geom_Plane
 from OCC.GeomAPI import GeomAPI_IntCS
-class RibMakerTranslatePlane(RibMaker):
-
-    def __init__(self,pts,l0,l1,l2):
-        RibMaker.__init__(self,pts,l0r,l1,l2)
-        self.initial_plane = something
-
-    def getR(self,t):
-        pass
-
-
-class RibMakerL0Perpendicular(RibMaker):
+class RibMakerL0Normal(RibMaker):
 
     def getRVecs(self,t):
 
-        pt = gp_Pnt()
+        p0 = gp_Pnt()
         vec = gp_Vec()
-        self.l0.curve.D1(t,pt,vec)
-        plane = Geom_Plane( pt, vec.as_dir() )
+        self.l0.curve.D1(t,p0,vec)
+        plane = Geom_Plane( p0, vec.as_dir() )
         intcs1 = GeomAPI_IntCS(self.l1.curve.GetHandle(),plane.GetHandle())
         intcs2 = GeomAPI_IntCS(self.l2.curve.GetHandle(),plane.GetHandle())
         
-        u1, v1, w1 = intcs1.Param(1)
-        u2, v2, w2 = intcs2.Param(1)
+        u1, v1, w1 = intcs1.Parameters(1)
+        u2, v2, w2 = intcs2.Parameters(1)
 
+        p1 = self.l1.curve.Value(w1)
+        p2 = self.l2.curve.Value(w2)
+
+        r1 = p1.as_vec() - p0.as_vec()
+        r2 = p2.as_vec() - p0.as_vec()
+        r3 = gp_Vec(r1.XYZ())
+        r3.Cross(r2)
+        r3 = r3/r3.Magnitude()
+
+        r4 = gp_Vec(r1.XYZ())
+        r4.Cross(r3)
+        r4 = r4/r4.Magnitude()
+
+        r2 = r4*(r4.Dot(r2))
+
+        return r1, r2 ,r3
+
+class RibMakerTranslatePlane(RibMaker):
+
+
+    def __init__(self,pointsList,l0,l1,l2,**kwargs):
+
+        NurbsSurfaceBase.__init__(self,**kwargs)
+
+        self.pts = pointsList
+
+        self.l0 = Edge(l0)
+        self.l1 = Edge(l1)
+        self.l2 = Edge(l2)
+
+        self.a = (self.l0.curve.Value(0)).as_vec()
+
+        p0 = self.l0.curve.Value(0).as_vec()
+        p1 = self.l1.curve.Value(0).as_vec()
+        p2 = self.l2.curve.Value(0).as_vec()
+
+        r1 = p1 - p0
+        r2 = p2 - p0
+        r3 = gp_Vec(r1.XYZ())
+        r3.Cross(r2)
+        r3 = r3/r3.Magnitude()
+
+        self.planeNormal = r3.as_dir()
+
+        A = np.matrix([[r1.X(),r1.Y(),r1.Z()],
+                       [r2.X(),r2.Y(),r2.Z()],
+                       [r3.X(),r3.Y(),r3.Z()]
+                      ],dtype='float64')
+        self.AI = A.I
+
+    def getRVecs(self,t):
+
+        p0 = self.l0.curve.Value(t)
+
+        plane = Geom_Plane(p0, self.planeNormal)
+
+        intcs1 = GeomAPI_IntCS(self.l1.curve.GetHandle(),plane.GetHandle())
+        intcs2 = GeomAPI_IntCS(self.l2.curve.GetHandle(),plane.GetHandle())
+        
+        u1, v1, w1 = intcs1.Parameters(1)
+        u2, v2, w2 = intcs2.Parameters(1)
+
+        p1 = self.l1.curve.Value(w1)
+        p2 = self.l2.curve.Value(w2)
+
+        r1 = p1.as_vec() - p0.as_vec()
+        r2 = p2.as_vec() - p0.as_vec()
+        r3 = gp_Vec(r1.XYZ())
+        r3.Cross(r2)
+        r3 = r3/r3.Magnitude()
+
+        r4 = gp_Vec(r1.XYZ())
+        r4.Cross(r3)
+        r4 = r4/r4.Magnitude()
+
+        r2 = r4*(r4.Dot(r2))
 
         return r1, r2 ,r3
 
@@ -251,6 +317,6 @@ TODO make classes inhereting from RibMaker that
 A. has a plane which is always parallel to the plane defined by l0(0) l1(0) l2(0)
 B. has a plane which is always perpendicular to l0(t)
 C. has a plane which revolves around l0
--  For A B and C, a handy oce function will be GeomAPI_IntCS
+-  For A B and C, a handy oce class will be GeomAPI_IntCS
 
 """
