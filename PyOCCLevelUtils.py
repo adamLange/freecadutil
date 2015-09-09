@@ -41,12 +41,6 @@ class NurbsSurfaceBase:
         n_v = len(poles)
         return (poleSequence,n_u,n_v)
 
-    def getShape(self):
-        surf = Part.BSplineSurface()
-        poles, n_u, n_v = self.getPoles()
-        surf.buildFromPolesMultsKnots(poles,[1]*(n_u+1),[1]*(n_v+1))
-        return surf
-
     def toPyOCC(self,dbg=False):
         poles,n_u,n_v = self.getPoles()
 
@@ -272,6 +266,12 @@ class RibMakerTranslatePlane(RibMaker):
         r3 = gp_Vec(r1.XYZ())
         r3.Cross(r2)
         r3 = r3/r3.Magnitude()
+
+        r4 = gp_Vec(r1.XYZ())
+        r4.Cross(r3)
+        r4 = r4/r4.Magnitude()
+
+        r2 = r4*(r4.Dot(r2))
 
         self.planeNormal = r3.as_dir()
 
