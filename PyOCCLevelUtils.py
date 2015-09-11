@@ -145,7 +145,7 @@ class RibMaker(NurbsSurfaceBase):
                       ],dtype='float64')
         self.AI = A.I
 
-    def getRVecs(self,t,initial=False):
+    def getRVecs(self,t):
 
         l0t = (self.l0.curve.Value(t)).as_vec()
 
@@ -188,8 +188,7 @@ class RibMaker(NurbsSurfaceBase):
         for pnt in self.pts:
             pnt = pnt.as_vec() - self.a
             pnt = np.matrix([pnt.X(),pnt.Y(),pnt.Z()],dtype='float64').T
-            trsf_pt = (M * pnt)
-            #p = gp_Pnt(gp_Vec(trsf_pt[0,0],trsf_pt[1,0],trsf_pt[2,0]) + b)
+            trsf_pt = (pnt.T * M).T
             p = gp_Pnt((gp_Vec(trsf_pt[0,0],trsf_pt[1,0],trsf_pt[2,0]) + b).XYZ())
             trsf_pts.append(p)
         return trsf_pts
@@ -263,8 +262,8 @@ class RibMakerTranslatePlane(RibMaker):
 
         r1 = p1 - p0
         r2 = p2 - p0
-        r3 = gp_Vec(r1.XYZ())
-        r3.Cross(r2)
+        r3 = gp_Vec(r2.XYZ())
+        r3.Cross(r1)
         r3 = r3/r3.Magnitude()
 
         r4 = gp_Vec(r1.XYZ())
@@ -298,8 +297,8 @@ class RibMakerTranslatePlane(RibMaker):
 
         r1 = p1.as_vec() - p0.as_vec()
         r2 = p2.as_vec() - p0.as_vec()
-        r3 = gp_Vec(r1.XYZ())
-        r3.Cross(r2)
+        r3 = gp_Vec(r2.XYZ())
+        r3.Cross(r1)
         r3 = r3/r3.Magnitude()
 
         r4 = gp_Vec(r1.XYZ())
