@@ -5,6 +5,7 @@ from OCC.gp import gp_Vec, gp_Trsf, gp_Pnt
 from OCC.BRepBuilderAPI import BRepBuilderAPI_MakeFace
 import numpy as np
 from OCCUtils.edge import Edge
+import OCCUtils
 
 
 class NurbsSurfaceBase:
@@ -309,6 +310,67 @@ class RibMakerTranslatePlane(RibMaker):
 
         return r1, r2 ,r3
 
+class SectionProjectionSurface(NurbsSurfaceBase):
+    
+    from OCC.BRepProj import BRepProj_Projection
+    from OCC.BRepIntCurveSurface import BRepIntCurveSurface_Inter
+    from OCC.gp import gp_Lin,gp_Dir,gp_Vec
+    import pdb
+
+    def __init__(self,point,rootWire,face1,face2,**kwargs):
+        """
+        @param point gp_Pnt
+        @param rootWire TopoDS_Wire
+        @param face1 TopoDS_Face
+        @param face2 TopoDS_Face
+        """
+
+        #NurbsSurfaceBase.__init__(self)
+        self.basePoint = point
+        self.rootWire = rootWire
+        self.face1 = face1
+        self.face2 = face2
+
+        self.uDegree = 2
+        self.vDegree = 1
+        self.uPeriodic = True
+        self.vPeriodic = False
+        self.uStartMultiplicity = 1
+        self.vStartMultiplicity = 2
+        self.uEndMultiplicity = 1
+        self.vEndMultiplicity = 2
+
+    def getPoles(self):
+        poles = []
+        poleSequence = []
+        rootPoleSequence = []
+        tipPoleSequence = []
+
+        rootOp = self.BRepProj_Projection(self.rootWire,self.face1,self.basePoint)
+        rootSectionWire = rootOp.Current()
+
+        rootBSpline = OCCUtils.edge.Edge(OCCUtils.Topo(rootSectionWire).edges().next())._adaptor.BSpline().GetObject()
+
+        inter = self.BRepIntCurveSurface_Inter()
+
+        for i in range(rootBSpline.NbPoles()):
+            currentRootPole = rootBSpline.Pole(i+1)
+            rootPoleSequence.append(currentRootPole)
+
+            vec = self.gp_Vec(self.basePoint,currentRootPole)
+            direction = self.gp_Dir(vec)
+            line = self.gp_Lin(self.basePoint,direction)
+            inter.Init(self.face2,line,1e-6)
+
+            tipPoleSequence.append(inter.Pnt())
+
+        poleSequence.extend(rootPoleSequence)
+        poleSequence.extend(tipPoleSequence)
+
+        self.pdb.set_trace()
+        n_u = rootBSpline.NbPoles()
+        n_v = 2
+        return (poleSequence,n_u,n_v)
 """
 
 TODO make classes inhereting from RibMaker that
