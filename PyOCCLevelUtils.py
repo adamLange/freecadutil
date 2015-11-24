@@ -346,22 +346,22 @@ class SectionProjectionSurface(NurbsSurfaceBase):
         rootPoleSequence = []
         tipPoleSequence = []
 
-        rootOp = self.BRepProj_Projection(self.rootWire,self.face1,self.basePoint)
-        rootSectionWire = rootOp.Current()
-
-        rootBSpline = OCCUtils.edge.Edge(OCCUtils.Topo(rootSectionWire).edges().next())._adaptor.BSpline().GetObject()
+        rootBSpline = OCCUtils.edge.Edge(OCCUtils.Topo(self.rootWire).edges().next())._adaptor.BSpline().GetObject()
 
         inter = self.BRepIntCurveSurface_Inter()
 
         for i in range(rootBSpline.NbPoles()):
+
             currentRootPole = rootBSpline.Pole(i+1)
-            rootPoleSequence.append(currentRootPole)
 
             vec = self.gp_Vec(self.basePoint,currentRootPole)
             direction = self.gp_Dir(vec)
             line = self.gp_Lin(self.basePoint,direction)
-            inter.Init(self.face2,line,1e-6)
 
+            inter.Init(self.face1,line,1e-6)
+            rootPoleSequence.append(inter.Pnt())
+
+            inter.Init(self.face2,line,1e-6)
             tipPoleSequence.append(inter.Pnt())
 
         poleSequence.extend(rootPoleSequence)
