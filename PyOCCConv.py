@@ -1,6 +1,6 @@
 import OCC
 import Part
-import FreeCADGui
+import FreeCADGui, FreeCAD
 import OCCUtils, OCCUtils.face
 
 def sel2Topo():
@@ -34,3 +34,34 @@ def selectionToWire():
 
 def show(TopoDSShape):
   Part.show(Part.__fromPythonOCC__(TopoDSShape))
+
+def showBSplineSurfacePoles(bspline):
+  from OCC.BRepBuilderAPI import BRepBuilderAPI_MakeVertex
+  for v in range(bspline.NbVPoles()):
+    for u in range(bspline.NbUPoles()):
+      pole = bspline.Pole(u+1,v+1)
+      mv = BRepBuilderAPI_MakeVertex(pole)
+      shapeobj = FreeCAD.ActiveDocument.addObject("Part::Feature","pole_{}_{}".format(u+1,v+1))
+      shapeobj.Shape = Part.__fromPythonOCC__(mv.Vertex())
+  FreeCAD.ActiveDocument.recompute()
+
+def showBSplineCurvePoles(bspline):
+  from OCC.BRepBuilderAPI import BRepBuilderAPI_MakeVertex
+  for u in range(bspline.NbPoles()):
+      pole = bspline.Pole(u+1)
+      mv = BRepBuilderAPI_MakeVertex(pole)
+      shapeobj = FreeCAD.ActiveDocument.addObject("Part::Feature","pole_{}".format(u+1))
+      shapeobj.Shape = Part.__fromPythonOCC__(mv.Vertex())
+  FreeCAD.ActiveDocument.recompute()
+
+def retrieveBSplineCurvePoles(bspline):
+  for u in range(bspline.NbPoles()):
+    pnt = Part.__toPythonOCC__(FreeCAD.ActiveDocument.getObjectsByLabel('pole_{}'.format(u+1))[0].Shape)
+    pnt = OCCUtils.Topo(pnt).vertices().next()
+    pnt = OCCUtils.vertex.vertex2pnt(pnt)
+    bspline.SetPole(u+1,pnt)
+
+def showPoint(point):
+  from OCC.BRepBuilderAPI import BRepBuilderAPI_MakeVertex
+  mv = BRepBuilderAPI_MakeVertex(point)
+  show(mv.Vertex())
