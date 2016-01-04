@@ -367,7 +367,6 @@ class SectionProjectionSurface(NurbsSurfaceBase):
         poleSequence.extend(rootPoleSequence)
         poleSequence.extend(tipPoleSequence)
 
-        self.pdb.set_trace()
         n_u = rootBSpline.NbPoles()
         n_v = 2
         return (poleSequence,n_u,n_v)
