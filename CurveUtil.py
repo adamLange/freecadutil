@@ -7,6 +7,8 @@ import numpy as np
 def wire_to_bspline(wire,degree=2,startMult=3,endMult=3):
   if wire.Closed():
     periodic = True
+    startMult = 1
+    endMult = 1
   else:
     periodic = False
 
