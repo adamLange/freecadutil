@@ -30,10 +30,12 @@ class NurbsSurfaceBase:
                 if not G.Construction:
                     geo.append(G)
             vec = sketch.Placement.multVec(geo[0].StartPoint)
+            vec = gp_Pnt(vec.x,vec.y,vec.z)
             points.append(vec)
             poleSequence.append(vec)
             for line in geo:
                 vec = sketch.Placement.multVec(line.EndPoint)
+                vec = gp_Pnt(vec.x,vec.y,vec.z)
                 points.append(vec)
                 poleSequence.append(vec)
             poles.append(points)
@@ -346,7 +348,7 @@ class SectionProjectionSurface(NurbsSurfaceBase):
         rootPoleSequence = []
         tipPoleSequence = []
 
-        rootBSpline = OCCUtils.edge.Edge(OCCUtils.Topo(self.rootWire).edges().next())._adaptor.BSpline().GetObject()
+        rootBSpline = OCCUtils.edge.Edge(OCCUtils.Topo(self.rootWire).edges().next()).adaptor.BSpline().GetObject()
 
         inter = self.BRepIntCurveSurface_Inter()
 
