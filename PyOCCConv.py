@@ -1,7 +1,7 @@
 import OCC
 import Part
 import FreeCADGui, FreeCAD
-import OCCUtils, OCCUtils.face
+import OCCUtils, OCCUtils.face, OCCUtils.vertex
 
 def sel2Topo():
   topo = selectionToTopoDSShape()
@@ -22,7 +22,7 @@ def selectionToVec():
   shape = selectionToTopoDSShape()
   shape = OCCUtils.Topo(shape)
   shape = shape.vertices().next()
-  shape = OCCUtils.vertex.vertex2pnt(shape)
+  shape = OCCUtils.Common.vertex2pnt(shape)
   shape = shape.as_vec()
   return shape
 
